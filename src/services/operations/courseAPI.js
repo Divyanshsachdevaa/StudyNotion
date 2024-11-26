@@ -88,6 +88,10 @@ export const addCourseDetails = async (data, token) => {
   let result = null
   const toastId = toast.loading("Loading...")
   try {
+    console.log("course data before api call :-> ");
+    for (let [key, value] of data.entries()) {
+      console.log(`${key}: ${value}`);
+    }
     const response = await apiConnector("POST", CREATE_COURSE_API, data, {
       "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${token}`,
@@ -134,15 +138,20 @@ export const createSection = async (data, token) => {
   let result = null
   const toastId = toast.loading("Loading...")
   try {
+    console.log("data before api call ", data);
     const response = await apiConnector("POST", CREATE_SECTION_API, data, {
       Authorization: `Bearer ${token}`,
     })
+    console.log("Response -> " + response);
+
     console.log("CREATE SECTION API RESPONSE............", response)
+
     if (!response?.data?.success) {
       throw new Error("Could Not Create Section")
     }
     toast.success("Course Section Created")
     result = response?.data?.updatedCourse
+
   } catch (error) {
     console.log("CREATE SECTION API ERROR............", error)
     toast.error(error.message)
@@ -156,15 +165,21 @@ export const createSubSection = async (data, token) => {
   let result = null
   const toastId = toast.loading("Loading...")
   try {
+
     const response = await apiConnector("POST", CREATE_SUBSECTION_API, data, {
+      "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${token}`,
     })
+
     console.log("CREATE SUB-SECTION API RESPONSE............", response)
+    
     if (!response?.data?.success) {
       throw new Error("Could Not Add Lecture")
     }
+
     toast.success("Lecture Added")
-    result = response?.data?.data
+    result = response?.data?.data;
+
   } catch (error) {
     console.log("CREATE SUB-SECTION API ERROR............", error)
     toast.error(error.message)
@@ -222,6 +237,7 @@ export const deleteSection = async (data, token) => {
   let result = null
   const toastId = toast.loading("Loading...")
   try {
+
     const response = await apiConnector("POST", DELETE_SECTION_API, data, {
       Authorization: `Bearer ${token}`,
     })

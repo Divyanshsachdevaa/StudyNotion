@@ -1,10 +1,13 @@
 import React, {useState, useEffect} from 'react';
 import { useForm } from 'react-hook-form';
 import countryCode from "../../data/countrycode.json";
-
+import { contactusEndpoint } from '../../services/apis'
+import { apiConnector } from '../../services/apiConnector';
+import toast from 'react-hot-toast';
 const ContactUsForm = () => {
 
-    const {loading, setLoading} = useState(false);
+    const [loading, setLoading] = useState(false);
+    
     const {
         register, 
         handleSubmit,
@@ -16,13 +19,13 @@ const ContactUsForm = () => {
         console.log("logging data => " , data);
         try{
             setLoading(true);
-            // const response = await apiConnector("POST", contactusEndpoint.CONTACT_US_API, data);
-            const response = {status: "OK"};
+            const response = await apiConnector("POST", contactusEndpoint.CONTACT_US_API, data);
+            toast.success("Email Sent successfully");
             console.log("Logging response => ", response);
             setLoading(false);
+           
         } catch(err){
             console.log("Error in fetching data from API ", err.message);
-            setLoading(false);
         }
     }
 

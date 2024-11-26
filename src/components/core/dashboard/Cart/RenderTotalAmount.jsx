@@ -1,7 +1,9 @@
 import React from 'react';
+import {useSelector} from 'react-redux';
+import IconButton from '../../../common/IconButton';
 
 const RenderTotalAmount = () => {
-    const {total} = useSelector((state) => state.cart)
+    const {total, cart} = useSelector((state) => state.cart)
 
     const handleBuyCourse = () => {
         const courses = cart.map((course, index) => {
@@ -15,7 +17,7 @@ const RenderTotalAmount = () => {
             <p>Total:</p>
             <p>Rs {total} </p>
 
-            <IconBtn 
+            <IconButton
                 text={"Buy Now"}
                 onClick={handleBuyCourse}
                 customClasses={"w-full justify-center"}

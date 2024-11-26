@@ -15,8 +15,9 @@ import MyProfile from './components/core/dashboard/MyProfile.jsx';
 import EnrolledCourses from './components/core/dashboard/EnrolledCourses.jsx';
 import Cart from "./components/core/dashboard/Cart/index.jsx";
 import AddCourse from "./components/core/AddCourse/index.jsx";
-
-
+import EditCourse from './components/core/dashboard/EditCourse/index.jsx';
+import MyCourses from './components/core/dashboard/MyCourses';
+import Contact from './pages/Contact.jsx';
 
 
 function App() {
@@ -31,13 +32,18 @@ function App() {
         <Route path='forgot-password' element={<OpenRoute> <ResetPassword /> </OpenRoute>} />
         <Route path='update-password/:id' element={<OpenRoute> <UpdatePassword /> </OpenRoute>} />
         <Route path='verify-email' element={<OpenRoute> <VerifyEmail /> </OpenRoute>} />
-        <Route path='about' element={<OpenRoute> <About /> </OpenRoute>} />
+        <Route path='about' element={ <About /> } />
+        <Route path='contact' element={ <Contact /> } />
+        
+        {/* <Route path='catalog/:catalogName' element={<Catalog />} /> */}
 
         <Route element={<PrivateRoute> <Dashboard /> </PrivateRoute>} >
           <Route path="dashboard/my-profile" element={<MyProfile />} />
           <Route path="dashboard/cart" element={<Cart />} />
           <Route path="dashboard/enrolled-courses" element={<EnrolledCourses />} />
           <Route path="dashboard/add-course" element={<AddCourse/>}/>
+          <Route path="dashboard/my-courses" element={<MyCourses/>}/>
+          <Route path="dashboard/edit-course/:courseId" element={<EditCourse/>}/>
         </Route>
         
       </Routes>

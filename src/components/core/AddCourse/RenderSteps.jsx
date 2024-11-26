@@ -2,6 +2,8 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { FaCheck } from "react-icons/fa";
 import CourseInformationForm from "./CourseInformation/CourseInformationForm.jsx";
+import CourseBuilderForm from "./CourseBuilderForm.jsx";
+import PublishCourse from './PublishCourse';
 
 const RenderSteps = () => {
 
@@ -24,25 +26,40 @@ const RenderSteps = () => {
 
     return (
         <>
-            <div className="min-w-full"> 
+            <div className="relative mb-2 flex w-full justify-center"> 
                 {steps.map( (item) =>
-                    <div className="flex flex-col" key={item.id}>
-                        <div className={`${step === item.id ? "bg-yellow-900 border-yellow-50 text-yellow-50" : "border-richblack-700 bg-richblack-800 text-richblack-300"}`}>
-                            {
-                                step > item.id ? (<FaCheck className="font-bold text-richblack-900"/>) : (item.id)
-                            }
+                    <>
+                        <div className="flex flex-col items-center" key={item.id}>
+                            <button className={`grid cursor-default aspect-square w-[34px] place-items-center rounded-full border-[1px]
+                                ${step === item.id ? "border-yellow-50 bg-yellow-900 text-yellow-50" : "border-richblack-700 bg-richblack-800 text-richblack-300"} ${step > item.id && "bg-yellow-50 text-yellow-50"}}`}>
+                                {
+                                    step > item.id ? (<FaCheck className="font-bold text-richblack-900"/>) : (item.id)
+                                }
+                            </button>
+                            {/* Add dashes  */}
                         </div>
-                        {/* Add dashes  */}
-                    </div>
+                        {item.id !== steps.length && (
+                            <>
+                            <div
+                                className={`h-[calc(34px/2)] w-[33%]  border-dashed border-b-2 ${
+                                step > item.id  ? "border-yellow-50" : "border-richblack-500"
+                            } `}
+                            ></div>
+                            </>
+                        )}
+                    </>
                 )}
             </div>
 
            {/* step name */}
-            <div>
+            <div className="relative mb-16 flex w-full select-none justify-between">
                 {
                     steps.map( (item) => 
-                        <div key={item.id}>
-                            <p>{item.title}</p>
+                        <div key={item.id} className="flex min-w-[130px] flex-col items-center gap-y-2">
+                            <p className={`text-sm ${
+                                step >= item.id ? "text-richblack-5" : "text-richblack-500"
+                                }`}
+                            >{item.title}</p>
                         </div>
                     )
                 }
@@ -51,8 +68,8 @@ const RenderSteps = () => {
             {/* FORM */}
 
             {step === 1 && <CourseInformationForm />}
-            {/* {step === 2 && <CourseBuilderForm />}
-            {step === 2 && <PublishCourse />} */}
+            {step === 2 && <CourseBuilderForm />}
+            {step === 3 && <PublishCourse />}
         </>
     )
 }

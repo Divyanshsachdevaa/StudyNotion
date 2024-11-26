@@ -45,7 +45,7 @@ function LoginForm() {
           value={email}
           onChange={handleOnChange}
           placeholder="Enter email address"
-          className="form-style w-full"
+          className="form-style w-full rounded-md"
         />
       </label>
       <label className="relative">
@@ -59,16 +59,16 @@ function LoginForm() {
           value={password}
           onChange={handleOnChange}
           placeholder="Enter Password"
-          className="form-style w-full !pr-10"
+          className="form-style w-full !pr-10 rounded-md"
         />
         <span
           onClick={() => setShowPassword((prev) => !prev)}
           className="absolute right-3 top-[38px] z-[10] cursor-pointer"
         >
           {showPassword ? (
-            <AiOutlineEyeInvisible fontSize={24} fill="#AFB2BF" />
+            <AiOutlineEyeInvisible fontSize={24} fill="#AFB2BF" className="mt-[-10px] fill-richblack-800" />
           ) : (
-            <AiOutlineEye fontSize={24} fill="#AFB2BF" />
+            <AiOutlineEye fontSize={24}  className="mt-[-10px] fill-richblack-800 " />
           )}
         </span>
         <Link to="/forgot-password">

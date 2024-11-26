@@ -5,8 +5,11 @@ import { useForm } from 'react-hook-form';
 import {useState, useEffect} from 'react'
 import { HiOutlineCurrencyRupee } from "react-icons/hi"
 import RequirementField from "./ReuirementField.js";
-import {setStep, setCourse} from "../../../../slices/CourseSlice.js"
+import {setSteps, setCourse} from "../../../../slices/CourseSlice.js"
 import {toast} from 'react-hot-toast';
+import IconButton from '../../../common/IconButton.jsx';
+import Upload from '../Upload.jsx'
+import {COURSE_STATUS} from '../../../../utils/constants.js'
 
 const CourseInformationForm = () => {
 
@@ -26,15 +29,15 @@ const CourseInformationForm = () => {
 
 
     useEffect(() => {
-        const getCourseCategory = async() => {
-            setLoading(true);
-            const categories = await fetchCourseCategories();
-            console.log(categories);
-            if(categories.length > 0){
-                setCourseCategory(categories)
-            }
-            setLoading(false);
-        }
+        // const getCourseCategory = async() => {
+        //     setLoading(true);
+        //     const categories = await fetchCourseCategories();
+        //     console.log(categories);
+        //     if(categories.length > 0){
+        //         setCourseCategory(categories)
+        //     }
+        //     setLoading(false);
+        // }
 
         if (editCourse) {
             // console.log("data populated", editCourse)
@@ -43,24 +46,33 @@ const CourseInformationForm = () => {
             setValue("coursePrice", course.price)
             setValue("courseTags", course.tag)
             setValue("courseBenefits", course.whatYouWillLearn)
-            setValue("courseCategory", course.category)
+            // setValue("courseCategory", course.category)
             setValue("courseRequirements", course.instructions)
-            setValue("courseImage", course.thumbnail)
+            setValue("thumbnailImage", course.thumbnailImage)
         }
 
-        getCourseCategory();
+        // getCourseCategory();
     }, []);
 
     const isFormUpdated = () => {
         const currentValues = getValues();
-        if()
-    }
+        return (
+            currentValues.courseTitle !== course.courseName ||
+            currentValues.courseShortDesc !== course.courseDescription ||
+            currentValues.coursePrice !== course.price ||
+            currentValues.courseBenefits !== course.whatYouWillLearn ||
+            // Add additional comparisons as needed
+            currentValues.courseRequirements.toString() !== course.instructions.toString()
+        );
+    };
+    
 
     const onSubmit = async(data) => {
         // editCourse variable means Course pehle ban chuka hai m abhi edit krne aya hu
         if(editCourse){
             if(isFormUpdated()){
                 const currentValues = getValues();
+
                 const formData = new FormData();
 
                 formData.append("courseId", course._id);
@@ -85,23 +97,23 @@ const CourseInformationForm = () => {
                     formData.append("whatYouWillLearn", data.courseBenefits);
                 }
 
-                if(currentValues.courseCategory._id !== course.courseCategory._id){
-                    formData.append("courseCategory", data.courseCategory);
-                }
+                // if(currentValues.courseCategory._id !== course.courseCategory._id){
+                //     formData.append("courseCategory", data.courseCategory);
+                // }
 
                 if(currentValues.courseRequirements.toString() !== course.courseRequirements.toString()){
-                    formData.append("instructions", JSON.strinify(data.courseRequirements));
+                    formData.append("instructions", JSON.stringify(data.courseRequirements));
                 }
 
-                // if(currentValues.courseImage !== course.courseImage){
-                //     formData.append("courseImage", data.courseImage);
-                // }
+                if(currentValues.courseImage !== course.thumbnail){
+                    formData.append("thumbnailImage", data.courseImage);
+                }
 
                 setLoading(true);
                 const result = await editCourseDetails(formData, token);
                 setLoading(false);
                 if(result){
-                    setStep(2);
+                    setSteps(2);
                     dispatch(setCourse(token))
                 }
             }
@@ -117,14 +129,17 @@ const CourseInformationForm = () => {
             formData.append("courseShortDesc", data.courseShortDesc);
             formData.append("price", data.coursePrice);
             formData.append("whatYouWillLearn", data.courseBenefits);
-            formData.append("courseCategory", data.courseCategory);
-            formData.append("instructions", JSON.strinify(data.courseRequirements));
+            // formData.append("courseCategory", data.courseCategory);
+            formData.append("instructions", JSON.stringify(data.courseRequirements));
+            formData.append("thumbnailImage", data.thumbnailImage);
             formData.append("status", COURSE_STATUS.DRAFT);
+
+            console.log("Thumbnail Image = ", data.thumbnailImage);
 
             setLoading(true);
             const result = await addCourseDetails(formData, token);
             if(result){
-                setStep(2);
+                dispatch(setSteps(2));
                 dispatch(setCourse(result));
             }
             setLoading(false);
@@ -152,7 +167,7 @@ const CourseInformationForm = () => {
             </div>    
 
             <div className="space-y-2 flex flex-col">
-                <label className="text-sm text-richblack-5" htmlFor="courseDesc">Course Short Description<sup>*</sup></label>
+                <label className="text-sm text-richblack-5" htmlFor="courseDesc">Course Short Description<sup className="text-pink-200">*</sup></label>
                 <textarea
                     id='courseDesc'
                     placeholder='Enter Description'
@@ -167,26 +182,32 @@ const CourseInformationForm = () => {
             </div>
 
             <div>
-                <label 
-                    className="text-sm text-richblack-5"
-                >Price<sup>*</sup></label>
-                <div className='relative'>
+                <label className="text-sm text-richblack-5">
+                    Price<sup className="text-pink-200">*</sup>
+                </label>
+                <div className="relative">
                     <textarea
-                        id='coursePrice'
-                        placeholder='Enter Course Price'
-                        {...register("coursePrice", {required: true, valuedAsNumber: true})}
-                        className="form-style w-full !pl-12 rounded-md bg-richblack-600"
+                    id="coursePrice"
+                    placeholder="Enter Course Price"
+                    {...register("coursePrice", { required: true, valueAsNumber: true })}
+                    className="form-style w-full !pl-12 rounded-md bg-richblack-600 text-richblack-200
+                                py-3 h-[48px] flex items-center"
                     />
-                    <HiOutlineCurrencyRupee className="absolute left-3 top-1/2 inline-block -translate-y-1/2 text-2xl text-richblack-400" />
+                    <HiOutlineCurrencyRupee
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-2xl text-richblack-400"
+                    />
                 </div>
-                {
-                    errors.coursePrice && (
-                        <span>course Price is Required**</span>
-                    )
-                }
+                {errors.coursePrice && (
+                    <span>
+                    Course Price is Required**<span className="text-red">*</span>
+                    </span>
+                )}
             </div>
 
-            <div>
+
+            {/* YE COURSE CATEGORY WALI API NAHI CHAL RAHI HAI */}
+
+            {/* <div>
                 <label htmlFor="courseCategory" >Course Category <sup>*</sup></label>
                 <select 
                     id='courseCategory'
@@ -202,7 +223,7 @@ const CourseInformationForm = () => {
                         )
                     }
                 </select>
-            </div>
+            </div> */}
 
             {/* create a custom component for handling tags inputs */}
             {/* <ChipInput 
@@ -216,23 +237,23 @@ const CourseInformationForm = () => {
             /> */}
 
             {/* Create a component for uploading and showing preview of media */}
-            {/* <Upload
-                name="upload"
+            <Upload
+                name="thumbnailImage"
                 label="Upload Thumbnail"
                 register={register}
                 errors={errors}
                 setValue={setValue}
-            /> */}
+            />
 
             {/* Benefits of the course */}
 
             <div>
-                <label>Benefits of the course <sup>*</sup></label>
+                <label>Benefits of the course <sup className="text-pink-200">*</sup></label>
                 <textarea 
                     id="coursebenefits"
                     placeholder="Enter Benefits of the course"
                     {...register("courseBenefits", {required: true})}
-                    className='min-h-[130px] w-full'
+                    className='min-h-[130px] w-full rounded-md bg-richblack-600'
                 />
                 {
                     errors.courseBenefits && (
@@ -242,7 +263,7 @@ const CourseInformationForm = () => {
             </div>
 
             <RequirementField
-                name="CourseRequirements"
+                name="courseRequirements"
                 label="Requirements/Instructions"
                 register={register}
                 errors={errors}
@@ -254,7 +275,7 @@ const CourseInformationForm = () => {
                 {
                     editCourse && (
                         <button 
-                            onClick={() => dispatch(setStep(2))}
+                            onClick={() => dispatch(setSteps(2))}
                             className='flex flex-items gap-x-2 bg-richblack-300'
                         >
                             Continue Without Saving
@@ -262,12 +283,10 @@ const CourseInformationForm = () => {
                     )
                 }
 
-                <IconBtn 
+                <IconButton
                     text={!editCourse ? "Next" : "Save Changes"}
-                    
                 />
             </div>
-
         </form>
     )
 }

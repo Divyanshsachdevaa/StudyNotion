@@ -6,59 +6,41 @@ const otpGenerator = require("otp-generator")
 const mailSender = require("../utils/mailSender")
 const { passwordUpdated } = require("../mail/templates/passwordUpdate")
 const Profile = require("../models/profile")
+const otpTemplate = require("../mail/templates/EmailVerificationTemplate");
 require("dotenv").config()
 
 // otp
 exports.sendOTP = async (req, res) => {
+    console.log("INSIDE OTP CONTROLLER");
+
     try {
-        // Fetch email from request body
         const { email } = req.body;
+        console.log("Email received:", email);
 
-        // Check if user already exists
         const checkUserPresent = await User.findOne({ email });
+        console.log("User check:", checkUserPresent);
 
-        if (checkUserPresent) {
-            return res.status(401).json({
-                success: false,
-                message: 'User already registered',
-            });
-        }
-
-        // Generate OTP
         let otp = otpGenerator.generate(6, {
             lowerCaseAlphabet: false,
             upperCaseAlphabet: false,
             specialChars: false,
         });
+        console.log("Generated OTP:", otp);
 
-        console.log("OTP generated: ", otp);
-
-        // Check if OTP is unique
-        let result = await OTP.findOne({ otp });
-
-        while (result) {
-            otp = otpGenerator.generate(6, {
-                lowerCaseAlphabet: false,
-                upperCaseAlphabet: false,
-                specialChars: false,
-            });
-            result = await OTP.findOne({ otp });
-        }
-
-        // Store OTP in DB
-        const otpPayload = { email, otp }; // Use the generated OTP
-
+        const otpPayload = { email, otp };
         const otpBody = await OTP.create(otpPayload);
-        console.log("OTP Body:", otpBody);
+        console.log("OTP stored in DB:", otpBody);
 
-        // Return response successfully
+        await mailSender(email, "OTP VERIFICATION MAIL", otpTemplate(otp));
+        console.log("Email sent successfully");
+
         res.status(200).json({
             success: true,
             message: "OTP sent successfully",
         });
 
     } catch (err) {
-        console.error(err);
+        console.error("Error in sendOTP:", err);
         res.status(500).json({
             success: false,
             message: err.message,
@@ -244,7 +226,7 @@ exports.changePassword = async (req, res) =>{
             })
         }
 
-        const updatedPassword = await user.findOneAndUpdate({email: email}, {password: newPassword}, {new: true});
+        const updatedPassword = await User.findOneAndUpdate({email: email}, {password: newPassword}, {new: true});
         await mailSender(email, "Password Changes Confirmation", "Your Password has been changed successfully");
         return res.json({
             sucess: true,

@@ -12,6 +12,7 @@ const courseSlice = createSlice({
     initialState,
     reducers: {
         setSteps(state, action){
+            console.log("payLoad received = ", action.payload);
             state.step = action.payload
         },
         setCourse(state, action){
@@ -27,7 +28,8 @@ const courseSlice = createSlice({
             state.step = 1;
             state.course = null;
             state.editCourse = false;
-        }
+            state.paymentLoading = false;
+        }        
     },
 })
 

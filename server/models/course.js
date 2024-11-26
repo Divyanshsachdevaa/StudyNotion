@@ -24,14 +24,12 @@ const courseSchema = new mongoose.Schema({
     courseContent:[
         {
             type: mongoose.Schema.Types.ObjectId,
-            required: true,
-            ref: "section",
+            ref: "Section",
         }
     ],
     ratingAndReviews:[
         {
             type: mongoose.Schema.Types.ObjectId,
-            required: true,
             ref: "ratingAndReview",
         }
     ],
@@ -41,12 +39,15 @@ const courseSchema = new mongoose.Schema({
     },
     thumbnail:{
         type: String,
-        required: true,
+        require: true,
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
         ref: "category"
+    },
+    status: {
+        type: String,
+        enum: ["Draft", "Published"],
     },
     StudentsEnrolled: [
         {
