@@ -9,6 +9,7 @@ import StatsComponent from "../components/core/AboutPage/StatsComponent.jsx";
 import LearningGrid from "../components/core/AboutPage/LearningGrid.jsx";
 import ContactFormSection from "../components/core/AboutPage/ContactFormSection.jsx";
 import Footer from "../components/common/Footer.jsx"
+import ReviewSlider from '../components/common/ReviewSlider.jsx';
 
 const About = () => {
     return (
@@ -103,6 +104,7 @@ const About = () => {
                 <h1 className="text-center text-4xl font-semibold mt-8">
                     Reviews from other learners
                     {/* <ReviewSlider/> */}
+                    <ReviewSlider/>
                 </h1>
             </section>
 

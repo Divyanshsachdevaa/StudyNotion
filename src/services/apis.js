@@ -1,7 +1,7 @@
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 export const categories = {
-    CATEGORIES_API: BASE_URL + "/courses/showAllCategories",
+    CATEGORIES_API: BASE_URL + "/course/showAllCategories",
 }
 
 export const endpoints = {
@@ -40,4 +40,16 @@ export const courseEndpoints = {
 
 export const contactusEndpoint = {
     CONTACT_US_API: BASE_URL + "/reach/contact",
+}
+
+// CATLOG PAGE DATA
+export const catalogData = {
+    CATALOGPAGEDATA_API: BASE_URL + "/course/getCategoryPageDetails",
+}
+
+// STUDENTS ENDPOINTS
+export const studentEndpoints = {
+    COURSE_PAYMENT_API: BASE_URL + "/payment/capturePayment",
+    COURSE_VERIFY_API: BASE_URL + "/payment/verifyPayment",
+    SEND_PAYMENT_SUCCESS_EMAIL_API: BASE_URL + "/payment/sendPaymentSuccessEmail",
 }

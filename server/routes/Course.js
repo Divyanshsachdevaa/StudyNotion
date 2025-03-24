@@ -3,10 +3,11 @@ const router = express.Router();
 const {auth, isStudent, isAdmin, isInstructor} = require("../middlewares/auth");
 
 const {createCourse, showAllCourses, getCourseDetails, editCourse, getInstructorCourses, deleteCourse} = require("../controllers/Courses")
-const {createCategory, showAllCategories, categoryPageDetails} = require("../controllers/Category")
+const {createCategory, showAllCategories, getCategoryPageDetails} = require("../controllers/Category")
 const {createRating, getAverageRating, getAllRatings} = require("../controllers/RatingAndReviews");
 const {createSection, updateSection, deleteSection} = require("../controllers/Section");
 const {createSubSection, updateSubSection, deleteSubSection} = require("../controllers/subSection");
+const {updateCourseProgress} = require('../controllers/courseProgress');
 
 // ********************************************************************************************************
 //                                      Course routes
@@ -25,14 +26,15 @@ router.post("/deleteSection",auth, isInstructor, deleteSection);
 router.post("/createSubSection", auth, isInstructor, createSubSection);
 router.put("/updateSubSection", auth, isInstructor, updateSubSection);
 router.post("/deleteSubSection", auth, isInstructor, deleteSubSection);
+router.post("/updateCourseProgress", auth, isStudent, updateCourseProgress)
 
 // ********************************************************************************************************
 //                                      Category routes (Only by Admin)
 // ********************************************************************************************************
 
 router.post("/createCategory", auth, isAdmin, createCategory)
-router.get("/showAllCategories", auth, isInstructor, showAllCategories)
-router.post("/categoryPageDetails", auth, isAdmin, categoryPageDetails)
+router.get("/showAllCategories", auth, showAllCategories)
+router.post("/getCategoryPageDetails", auth, getCategoryPageDetails)
 
 // ********************************************************************************************************
 //                                      Rating and Review

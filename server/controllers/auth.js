@@ -139,68 +139,47 @@ exports.signUp = async (req, res) => {
 
 // login
 exports.login = async (req, res) => {
-    try{
-        // get data from req body
-        const {email, password} = req.body;
-        // validate data
-        if(!email || !password){
-            return res.status(400).json({
-                success: false,
-                message: "All fields are required",
-            })
-        }
-        
-        // user check exists or not
-        const user = await User.findOne({email: email});
-        if(!user){
-            return res.status(401).json({
-                success: false,
-                message: "User Not exists, Please SignIn or check your details"
-            })
-        }
-        // generate JWT, after password matching
-        if(await bcrypt.compare(password, user.password)){
-            const payload = {
-                email: user.email,
-                id: user._id,
-                accountType: user.accountType,
-            }
+  try {
+    const { email, password } = req.body;
 
-            const token = jwt.sign(payload, process.env.JWT_SECRET, {
-                expiresIn: "2h",
-            });
-            
-            user.token = token;
-            await user.save();
-            
-            user.password = undefined;
-            // create cookie and send response
-            const options = {
-                expires: new Date(Date.now() + 3*24*60*60*100),
-                httpOnly: true,
-            }
-
-            res.cookie("token", token, options).status(200).json({
-                success: true,
-                token,
-                user,
-                message: "User Signed in successfully",
-            })
-        }
-        else{
-            return res.status(401).json({
-                success: false,
-                message: "Password is incorrect",
-            })
-        }
-    } catch(err){
-        console.log(err);
-        return res.status(500).json({
-            success: false,
-            message: "Login failed, please try again",
-        })
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+        console.log("User does not exists....");
+        return res.status(404).json({ 
+            success: false, 
+            message: "User does not exist, please sign up first." 
+        });
     }
-}
+    
+    const accountType = user.accountType;
+
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ 
+        success: false, 
+        message: "Invalid credentials, please check your password." 
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign({ id: user._id , accountType:user.accountType}, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      token,
+      accountType,
+      user
+    });
+
+  } catch (error) {
+    console.error("Login Error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 
 // change password
 exports.changePassword = async (req, res) =>{

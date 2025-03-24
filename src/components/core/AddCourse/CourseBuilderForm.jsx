@@ -18,7 +18,7 @@ const CourseBuilderForm = () => {
     const {step} = useSelector((state) => state.course);
     const dispatch = useDispatch();
 
-
+    
     useEffect(() => {
         console.log("Updated value of step: ", step);
         if (step === 3) {
@@ -46,6 +46,7 @@ const CourseBuilderForm = () => {
     const goBack = () => {
         dispatch(setSteps(1));
     }
+
     const goNext = () => {
         if(course.courseContent.length === 0){
             toast.error("Please add atleast one section")

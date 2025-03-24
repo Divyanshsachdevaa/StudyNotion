@@ -5,8 +5,16 @@ const User = require("../models/user");
 // auth
 exports.auth = async (req, res, next) => {
     try{
-        // extract token
-        const token = req.cookies.token || req.body.token || req.header("Authorization").replace("Bearer ", "").trim();
+
+        console.log("Entered auth middleware");
+
+        let token = req.cookies.token || req.body.token || req.header("Authorization");
+
+        if (token) {
+            token = token.replace("Bearer ", "").trim();
+        }
+
+        console.log("Extracted Token:", token); // This should always print something, even if undefined
 
         // if token missing, return res
         if(!token){
@@ -80,6 +88,10 @@ exports.isInstructor = async(req, res, next) => {
 // isAdmin
 exports.isAdmin = async(req, res, next) => {
     try{
+        // req.user is token that i am sending through request
+        // while creating token in login api i have included accountType in token
+        // that is why i am able to fetch it here
+        
         if(req.user.accountType !== "Admin"){
             return res.status(401).json({
                 status: false,

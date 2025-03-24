@@ -10,6 +10,7 @@ import {toast} from 'react-hot-toast';
 import IconButton from '../../../common/IconButton.jsx';
 import Upload from '../Upload.jsx'
 import {COURSE_STATUS} from '../../../../utils/constants.js'
+import ChipInput from './ChipInput.jsx';
 
 const CourseInformationForm = () => {
 
@@ -29,15 +30,15 @@ const CourseInformationForm = () => {
 
 
     useEffect(() => {
-        // const getCourseCategory = async() => {
-        //     setLoading(true);
-        //     const categories = await fetchCourseCategories();
-        //     console.log(categories);
-        //     if(categories.length > 0){
-        //         setCourseCategory(categories)
-        //     }
-        //     setLoading(false);
-        // }
+        const getCourseCategory = async() => {
+            setLoading(true);
+            const categories = await fetchCourseCategories(token);
+            console.log(categories);
+            if(categories.length > 0){
+                setCourseCategory(categories)
+            }
+            setLoading(false);
+        }
 
         if (editCourse) {
             // console.log("data populated", editCourse)
@@ -46,12 +47,12 @@ const CourseInformationForm = () => {
             setValue("coursePrice", course.price)
             setValue("courseTags", course.tag)
             setValue("courseBenefits", course.whatYouWillLearn)
-            // setValue("courseCategory", course.category)
+            setValue("courseCategory", course.category)
             setValue("courseRequirements", course.instructions)
             setValue("thumbnailImage", course.thumbnailImage)
         }
 
-        // getCourseCategory();
+        getCourseCategory();
     }, []);
 
     const isFormUpdated = () => {
@@ -62,7 +63,8 @@ const CourseInformationForm = () => {
             currentValues.coursePrice !== course.price ||
             currentValues.courseBenefits !== course.whatYouWillLearn ||
             // Add additional comparisons as needed
-            currentValues.courseRequirements.toString() !== course.instructions.toString()
+            JSON.stringify(currentValues.courseRequirements) !== JSON.stringify(course.instructions) ||
+            JSON.stringify(currentValues.courseTags) !== JSON.stringify(course.tag)
         );
     };
     
@@ -89,17 +91,17 @@ const CourseInformationForm = () => {
                     formData.append("price", data.coursePrice);
                 }
 
-                // if(currentValues.courseTags !== course.courseTags){
-                //     formData.append("courseTags", data.courseTags);
-                // }
+                if(currentValues.courseTags !== course.courseTags){
+                    formData.append("tag", JSON.stringify(data.courseTags));
+                }
 
                 if(currentValues.courseBenefits !== course.whatYouWillLearn){
                     formData.append("whatYouWillLearn", data.courseBenefits);
                 }
 
-                // if(currentValues.courseCategory._id !== course.courseCategory._id){
-                //     formData.append("courseCategory", data.courseCategory);
-                // }
+                if(currentValues.courseCategory._id !== course.courseCategory._id){
+                    formData.append("courseCategory", data.courseCategory);
+                }
 
                 if(currentValues.courseRequirements.toString() !== course.courseRequirements.toString()){
                     formData.append("instructions", JSON.stringify(data.courseRequirements));
@@ -129,10 +131,11 @@ const CourseInformationForm = () => {
             formData.append("courseShortDesc", data.courseShortDesc);
             formData.append("price", data.coursePrice);
             formData.append("whatYouWillLearn", data.courseBenefits);
-            // formData.append("courseCategory", data.courseCategory);
+            formData.append("category", data.courseCategory);
             formData.append("instructions", JSON.stringify(data.courseRequirements));
             formData.append("thumbnailImage", data.thumbnailImage);
             formData.append("status", COURSE_STATUS.DRAFT);
+            formData.append("tag", JSON.stringify(data.courseTags));
 
             console.log("Thumbnail Image = ", data.thumbnailImage);
 
@@ -205,11 +208,10 @@ const CourseInformationForm = () => {
             </div>
 
 
-            {/* YE COURSE CATEGORY WALI API NAHI CHAL RAHI HAI */}
-
-            {/* <div>
+            <div>
                 <label htmlFor="courseCategory" >Course Category <sup>*</sup></label>
                 <select 
+                    className='text-richblack-900'
                     id='courseCategory'
                     defaultValue="course"
                     {...register("courseCategory", {required: true})}
@@ -217,16 +219,17 @@ const CourseInformationForm = () => {
                     <option value="" disabled >Chooose a Category</option>
                     {
                         !loading && courseCategories.map( (category, index) => 
-                            <option key={index} value={category?._id}>
+                            <option className='text-richblack-900' key={index} value={category?._id}>
                                 {category?.name}
                             </option>
                         )
                     }
                 </select>
-            </div> */}
+            </div>
 
             {/* create a custom component for handling tags inputs */}
-            {/* <ChipInput 
+            <ChipInput 
+                className='text-richblack-900'
                 label="Tags"
                 name="courseTags"
                 placeholder="Enter tags and press enter"
@@ -234,7 +237,7 @@ const CourseInformationForm = () => {
                 errors={errors}
                 setValue={setValue}
                 getValues={getValues}
-            /> */}
+            />
 
             {/* Create a component for uploading and showing preview of media */}
             <Upload

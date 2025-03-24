@@ -35,11 +35,18 @@ const courseSchema = new mongoose.Schema({
     ],
     price:{
         type: Number,
-        require: true,
+        requiredd: true,
     },
     thumbnail:{
         type: String,
         require: true,
+    },
+    tag:{
+        type: [String],
+        required: true,
+    },
+    instructions:{
+        type: [String]
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
@@ -52,10 +59,13 @@ const courseSchema = new mongoose.Schema({
     StudentsEnrolled: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            required: true,
             ref: "user",
         }
-    ]
+    ],
+    createdAt:{
+        type: Date,
+        default: Date.now
+    }
 })
 
 module.exports = mongoose.model("course", courseSchema);

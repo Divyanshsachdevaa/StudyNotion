@@ -10,6 +10,7 @@ import LearningSection from "../components/core/HomePage/LearningSection";
 import InstructorSection from "../components/core/HomePage/InstructorSection";
 import Footer from "../components/common/Footer.jsx";
 import ExploreMore from "../components/core/HomePage/ExploreMore"
+import ReviewSlider from '../components/common/ReviewSlider.jsx';
 
 const Home = () => { 
     return (

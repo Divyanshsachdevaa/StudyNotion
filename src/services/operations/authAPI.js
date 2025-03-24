@@ -18,6 +18,7 @@ export function sendOtp(email, navigate) {
   return async (dispatch) => {
     const toastId = toast.loading("Loading...")
     dispatch(setLoading(true))
+    console.log("Before entering try block -> " + email);
     try {
       const response = await apiConnector("POST", SENDOTP_API, {
         email,
@@ -85,57 +86,64 @@ export function signUp(
   }
 }
 
-
 export function login(email, password, navigate) {
   return async (dispatch) => {
-    const toastId = toast.loading("Loading...")
-    dispatch(setLoading(true))
-    console.log("Before try ");
+    const toastId = toast.loading("Loading...");
+    dispatch(setLoading(true));
+    console.log("Before try");
+
     try {
       console.log("Before fetching response");
       console.log(LOGIN_API);
-      console.log("email",email," ",password);
-      const response = await apiConnector("POST", LOGIN_API , { email, password});
+      console.log("email", email, " ", password);
+      const response = await apiConnector("POST", LOGIN_API, { email, password });
 
       console.log("After fetching response");
-
-      console.log("LOGIN API RESPONSE............", response)
+      console.log("LOGIN API RESPONSE............", response.data.message);
 
       if (!response.data.success) {
-        throw new Error(response.data.message)
+        throw new Error(response.data.message);
       }
 
-      toast.success("Login Successful")
-      dispatch(setToken(response.data.token))
+      toast.success("Login Successful");
+      dispatch(setToken(response.data.token));
+
       const userImage = response.data?.user?.image
         ? response.data.user.image
-        : `https://api.dicebear.com/5.x/initials/svg?seed=${response.data.user.firstName} ${response.data.user.lastName}`
-      dispatch(setUser({ ...response.data.user, image: userImage }))
-      
-      localStorage.setItem("token", JSON.stringify(response.data.token))
-      localStorage.setItem("user", JSON.stringify(response.data.user))
-      navigate("/dashboard/my-profile")
+        : `https://api.dicebear.com/5.x/initials/svg?seed=${response.data.user.firstName} ${response.data.user.lastName}`;
+      dispatch(setUser({ ...response.data.user, image: userImage }));
+
+      localStorage.setItem("token", JSON.stringify(response.data.token));
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      navigate("/dashboard/my-profile");
     } catch (error) {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log("Error Data:", error.response.data);
-        console.log("Error Status:", error.response.status);
-        console.log("Error Headers:", error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.log("Error Request:", error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log("Error Message:", error.message);
-      }
       console.log("LOGIN API ERROR............", error);
-      toast.error("Login Failed");
+
+      // Check if error response exists
+      if (error.response) {
+        const { status, data } = error.response;
+        console.log("Error Data:", data);
+        console.log("Error Status:", status);
+
+        if (status === 401) {
+          // Show proper error message
+          toast.error(data.message || "Invalid credentials, please check your details.");
+        } 
+        else if(status === 404){
+          toast.error(data.message || "User not found, please signup first.");
+        }
+        else {
+          toast.error("Something went wrong, please try again later.");
+        }
+      } else {
+        console.log("Error Message:", error.message);
+        toast.error("Network error, please check your connection.");
+      }
     }
-    
-    dispatch(setLoading(false))
-    toast.dismiss(toastId)
-  }
+
+    dispatch(setLoading(false));
+    toast.dismiss(toastId);
+  };
 }
 
 export function logout(navigate) {
